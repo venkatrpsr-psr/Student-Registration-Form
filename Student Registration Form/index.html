@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management Dashboard</title>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:#f4f6f9;
+}
+
+
+#loginPage{
+    width:380px;
+    margin:120px auto;
+    background:white;
+    padding:40px 30px;
+    border-radius:12px;
+    box-shadow:0 12px 25px rgba(0,0,0,0.2);
+}
+
+#loginPage h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#333;
+}
+
+#loginPage input{
+    width:100%;
+    padding:12px 10px;
+    margin:8px 0 15px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+}
+
+#loginPage input:focus{
+    border-color:#581845;
+    outline:none;
+}
+
+#loginPage button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#581845;
+    color:white;
+    font-weight:bold;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+#loginPage button:hover{
+    background:gold;
+}
+
+#loginPage p.error{
+    font-size:13px;
+    color:red;
+    margin:0 0 10px 0;
+}
+
+
+#dashboard{
+    display:none;
+}
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:220px;
+    height:100%;
+    background:#1e293b;
+    padding:20px;
+    color:white;
+}
+
+.sidebar h2{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.sidebar ul{
+    list-style:none;
+    padding:0;
+}
+
+.sidebar ul li{
+    background:#581845;
+    text-align:center;
+    padding:12px 10px;
+    margin:8px 0;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.sidebar ul li:hover{
+    background:#475569;
+}
+
+
+.main{
+    margin-left:240px;
+    padding:25px 30px;
+}
+
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom:25px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.full{
+    grid-column:1/3;
+}
+
+input, select, textarea{
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:14px;
+}
+
+input:focus, textarea:focus, select:focus{
+    border-color:#581845;
+    outline:none;
+}
+
+
+button{
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.primary{background:#581845; color:white;}
+.primary:hover{background:#581845;}
+.danger{background:#581845; color:white;}
+
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th, td{
+    padding:12px 10px;
+    border:1px solid #ddd;
+    text-align:center;
+    font-size:14px;
+}
+
+th{
+    background:#581845;
+    color:white;
+}
+
+img{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+}
+
+.search-filter{
+    display:flex;
+    gap:15px;
+    margin-bottom:15px;
+}
+
+.error{
+    color:red;
+    font-size:13px;
+}
+
+
+#thankyouPopup{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:350px;
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 12px 25px rgba(0,0,0,0.3);
+    z-index:1000;
+}
+
+#thankyouPopup h3{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+#thankyouPopup .closeBtn{
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:18px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+#closeRecordBtn{
+    margin-top:15px;
+    padding:10px 15px;
+    border:none;
+    border-radius:6px;
+    background:#581845;
+    color:white;
+    cursor:pointer;
+}
+
+.view-btn{
+    background:#581845;
+    color:white;
+    border:none;
+    padding:5px 8px;
+    border-radius:5px;
+}
+
+.view-btn:hover{
+    background:#3d0f30;
+}
+
+.action-btn{
+    background:#581845;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:13px;
+    min-width:70px;
+    cursor:pointer;
+}
+
+.action-btn:hover{
+    background:#3d0f30;
+}
+</style>
+</head>
+<body>
+
+
+<div id="loginPage">
+<h2>Student Registation Login</h2>
+
+<input type="text" id="fullname" placeholder="Full Name">
+<p id="nameError" class="error"></p>
+
+<input type="email" id="email" placeholder="Email Address">
+<p id="emailError" class="error"></p>
+
+<input type="password" id="password" placeholder="Password">
+<p id="passError" class="error"></p>
+
+
+
+<button class="primary" onclick="login()">Login</button>
+
+<p style="text-align:right; font-size:13px; margin-top:10px;">
+<a href="#" onclick="forgotPassword()">Forgot Password?</a>
+</p>
+
+<p id="loginError" class="error" style="text-align:center;"></p>
+</div>
+
+
+<div id="dashboard">
+
+<div class="sidebar">
+<h2>Registration Details Dashboard</h2>
+<ul>
+<li onclick="logout()">Logout</li>
+</ul>
+</div>
+
+<div class="main">
+
+
+<div class="card">
+<h3>Student Registration</h3>
+<div class="form-grid">
+
+
+<select id="title">
+<option value="">Select Title</option>
+<option>Mr</option>
+<option>Mrs</option>
+</select>
+
+<input type="text" id="studentName" placeholder="Student Name">
+<input type="text" id="studentId" placeholder="Student ID">
+
+<input type="number" id="age" placeholder="Age">
+
+
+<input type="text" id="father" placeholder="Father's Name">
+
+<input type="text" id="mother" placeholder="Mother's Name">
+<input type="text" id="mobile" placeholder="Mobile (10 digits)">
+<input type="text" id="nationality" placeholder="Nationality">
+
+<input type="text" id="aadhar" placeholder="Aadhar Number">
+<input type="text" id="city" placeholder="City">
+
+<input type="text" id="state" placeholder="State">
+<input type="text" id="country" placeholder="Country">
+
+<input type="text" id="pincode" placeholder="Pincode">
+<textarea id="address" placeholder="Full Address" class="full"></textarea>
+
+<input type="file" id="image" class="full">
+
+
+<div class="full" style="display:flex; gap:15px; margin-top:10px;">
+    <button class="primary" style="flex:1; padding:8px 0; font-size:14px;" onclick="submitData()">Submit</button>
+    <button class="danger" style="flex:1; padding:8px 0; font-size:14px;" onclick="resetForm()">Reset</button>
+</div>
+<p id="formError" class="error"></p>
+
+</div>
+</div>
+
+<div class="card">
+<h3>Student Records</h3>
+
+<div class="search-filter">
+<input type="text" id="searchInput" placeholder="Search by Name" onkeyup="filterTable()">
+<select id="filterTitle" onchange="filterTable()">
+<option value="">Filter by Title</option>
+<option>Mr</option>
+<option>Mrs</option>
+</select>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Image</th>
+<th>Name</th>
+<th>Age</th>
+<th>Mobile</th>
+<th>Address</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<button id="closeRecordBtn" onclick="showThankYou()">Close</button>
+</div>
+
+</div>
+</div>
+
+<div id="thankyouPopup">
+<span class="closeBtn" onclick="closeThankYou()">×</span>
+<h3>Thank You!</h3>
+<p style="text-align:center;">Your submission is recorded successfully.</p>
+</div>
+<div id="viewPopup" style="display:none; position:fixed;top:50%; left:50%;
+transform:translate(-50%,-50%);
+width:500px; max-height:80vh; overflow-y:auto;
+background:white; border-radius:12px; padding:20px;
+box-shadow:0 12px 25px rgba(0,0,0,0.3); z-index:1000;">
+
+<span onclick="closeView()" 
+style="position:absolute; top:10px; right:15px; font-size:18px; cursor:pointer; font-weight:bold;">×</span>
+
+<h3 style="text-align:center; margin-bottom:15px;">Student Full Details</h3>
+
+<div id="viewContent"></div>
+
+</div>
+<script>
+
+document.getElementById("fullname").addEventListener("input",function(){
+if(this.value.length<3){nameError.innerText="Name must be at least 3 chars";}
+else{nameError.innerText="";}
+});
+document.getElementById("email").addEventListener("input",function(){
+let pattern=/^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+if(!this.value.match(pattern)){emailError.innerText="Enter valid email";}
+else{emailError.innerText="";}
+});
+document.getElementById("password").addEventListener("input",function(){
+if(this.value.length<6){passError.innerText="Password min 6 chars";}
+else{passError.innerText="";}
+});
+
+function login(){
+let name=document.getElementById("fullname").value;
+let email=document.getElementById("email").value;
+let pass=document.getElementById("password").value;
+if(name===""||email===""||pass===""){loginError.innerText="All fields required";return;}
+if(email==="venkat@gmail.com" && pass==="123456"){
+document.getElementById("loginPage").style.display="none";
+document.getElementById("dashboard").style.display="block";
+}else{loginError.innerText="Invalid Credentials";}
+}
+
+function togglePassword(){
+let passField=document.getElementById("password");
+passField.type=(passField.type==="password")?"text":"password";
+}
+function forgotPassword(){
+let email=document.getElementById("email").value;
+if(email===""){alert("Enter your email to reset password");}
+else{alert("Password reset link sent to "+email);}
+}
+function logout(){
+document.getElementById("dashboard").style.display="none";
+document.getElementById("loginPage").style.display="block";
+}
+
+
+let students=[];
+let editIndex=-1;
+
+function submitData(){
+    document.getElementById("formError").innerText = "";
+
+    let titleVal = document.getElementById("title").value;
+    let nameVal = document.getElementById("studentName").value;
+    let mobileVal = document.getElementById("mobile").value;
+    let ageVal = document.getElementById("age").value;
+
+    if(titleVal==="" || nameVal==="" || mobileVal.length!=10){
+        document.getElementById("formError").innerText="Fill required fields!";
+        return;
+    }
+
+    let file = document.getElementById("image").files[0];
+    if(!file && editIndex === -1){ 
+        document.getElementById("formError").innerText="Upload image!";
+        return;
+    }
+
+    let student = {
+        img: file ? URL.createObjectURL(file) : students[editIndex].img, 
+        title: titleVal,
+        name: titleVal + " " + nameVal,
+        studentId: document.getElementById("studentId").value,
+        age: ageVal,
+        father: document.getElementById("father").value,
+        mother: document.getElementById("mother").value,
+        mobile: mobileVal,
+        nationality: document.getElementById("nationality").value,
+        aadhar: document.getElementById("aadhar").value,
+        city: document.getElementById("city").value,
+        state: document.getElementById("state").value,
+        country: document.getElementById("country").value,
+        pincode: document.getElementById("pincode").value,
+        address: document.getElementById("address").value
+    };
+
+    if(editIndex===-1){
+        students.push(student);
+    } else {
+        students[editIndex] = student;
+        editIndex = -1;
+    }
+
+    displayTable();
+    resetForm(); 
+}
+
+function resetForm(){
+    document.getElementById("title").value = "";
+    document.getElementById("studentName").value = "";
+    document.getElementById("studentId").value = "";
+    document.getElementById("age").value = "";
+    document.getElementById("father").value = "";
+    document.getElementById("mother").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("nationality").value = "";
+    document.getElementById("aadhar").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("state").value = "";
+    document.getElementById("country").value = "";
+    document.getElementById("pincode").value = "";
+    document.getElementById("address").value = "";
+    document.getElementById("image").value = "";
+    document.getElementById("formError").innerText = "";
+    editIndex = -1;
+}
+
+
+
+function displayTable(){
+    let body=document.getElementById("tableBody");
+    body.innerHTML="";
+    students.forEach((s,index)=>{
+        body.innerHTML += `<tr>
+        <td><img src="${s.img}"></td>
+        <td>${s.name}</td>
+        <td>${s.age}</td>
+        <td>${s.mobile}</td>
+        <td>${s.address}</td>
+        <td>
+        <button class="action-btn" onclick="editStudent(${index})">Edit</button>
+        <button class="action-btn" onclick="deleteStudent(${index})">Delete</button>
+        <button class="action-btn" onclick="viewStudent(${index})">View</button>
+        </td>
+        </tr>`;
+    });
+}
+
+function viewStudent(index){
+    let s = students[index];
+
+    let content = `
+        <div style="text-align:center; margin-bottom:15px;">
+            <img src="${s.img}" style="width:100px; height:100px; border-radius:50%;">
+        </div>
+
+        <p><b>Name:</b> ${s.name}</p>
+        <p><b>Student ID:</b> ${s.studentId}</p>
+        <p><b>Age:</b> ${s.age}</p>
+        <p><b>Father:</b> ${s.father}</p>
+        <p><b>Mother:</b> ${s.mother}</p>
+        <p><b>Mobile:</b> ${s.mobile}</p>
+        <p><b>Nationality:</b> ${s.nationality}</p>
+        <p><b>Aadhar:</b> ${s.aadhar}</p>
+        <p><b>City:</b> ${s.city}</p>
+        <p><b>State:</b> ${s.state}</p>
+        <p><b>Country:</b> ${s.country}</p>
+        <p><b>Pincode:</b> ${s.pincode}</p>
+        <p><b>Address:</b> ${s.address}</p>
+    `;
+
+    document.getElementById("viewContent").innerHTML = content;
+    document.getElementById("viewPopup").style.display="block";
+}
+
+function closeView(){
+    document.getElementById("viewPopup").style.display="none";
+}
+
+
+function editStudent(index){
+    let s = students[index];
+    document.getElementById("title").value = s.title;
+    document.getElementById("studentName").value = s.name.replace(s.title+" ","");
+    document.getElementById("studentId").value = s.studentId || "";
+    document.getElementById("age").value = s.age;
+    document.getElementById("father").value = s.father || "";
+    document.getElementById("mother").value = s.mother || "";
+    document.getElementById("mobile").value = s.mobile;
+    document.getElementById("nationality").value = s.nationality || "";
+    document.getElementById("aadhar").value = s.aadhar || "";
+    document.getElementById("city").value = s.city || "";
+    document.getElementById("state").value = s.state || "";
+    document.getElementById("country").value = s.country || "";
+    document.getElementById("pincode").value = s.pincode || "";
+    document.getElementById("address").value = s.address || "";
+    editIndex = index;
+}
+
+function deleteStudent(index){students.splice(index,1);displayTable();}
+
+
+function filterTable(){
+    let searchValue = document.getElementById("searchInput").value.toLowerCase();
+    let filterTitle = document.getElementById("filterTitle").value;
+
+    let body = document.getElementById("tableBody");
+    body.innerHTML = "";
+
+    students.forEach((s,index)=>{
+        let matchesSearch = s.name.toLowerCase().includes(searchValue);
+        let matchesTitle = (filterTitle === "" || s.title === filterTitle);
+
+        if(matchesSearch && matchesTitle){
+            body.innerHTML += `<tr>
+                <td><img src="${s.img}"></td>
+                <td>${s.name}</td>
+                <td>${s.age}</td>
+                <td>${s.mobile}</td>
+                <td>${s.address}</td>
+                <td>
+                    <button class="action-btn" onclick="editStudent(${index})">Edit</button>
+                    <button class="action-btn" onclick="deleteStudent(${index})">Delete</button>
+                    <button class="action-btn" onclick="viewStudent(${index})">View</button>
+                </td>
+            </tr>`;
+        }
+    });
+}
+
+function showThankYou(){document.getElementById("thankyouPopup").style.display="block";}
+function closeThankYou(){document.getElementById("thankyouPopup").style.display="none";}
+</script>
+
+</body>
+</html>
